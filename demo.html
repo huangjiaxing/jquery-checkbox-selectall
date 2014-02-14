@@ -1,0 +1,80 @@
+<!DOCTYPE html>
+<html>
+    
+    <head>
+        <meta charset="utf-8">
+        <title>全选插件</title>
+    </head>
+    
+    <body>
+        <dl>
+            <dt><label><input type="checkbox" data-checkbox-group="one" data-checkbox-checkall />全选</label></dt>
+            <dd>
+                <p><label><input type="checkbox" name="item" data-checkbox-group="one"/>选项一</label></p>
+                <p><label><input type="checkbox" name="item" data-checkbox-group="one"/>选项二</label></p>
+            </dd>
+        </dl>
+
+        <dl>
+            <dt><label><input type="checkbox" data-checkbox-group="two" data-checkbox-checkall />全选</label></dt>
+            <dd>
+                <p><label><input type="checkbox" name="item" data-checkbox-group="two" />选项一</label></p>
+                <p><label><input type="checkbox" name="item" data-checkbox-group="two" />选项二</label></p>
+            </dd>    
+        </dl>
+        
+        <script src="http://libs.baidu.com/jquery/1.10.2/jquery.min.js"></script>
+        <script>
+            //控制作用域
+            ;(function($,undefined){
+                //所有全选checkbox
+                var checkAll = $("[data-checkbox-checkall]");
+                //遍历处理每一组的情况
+                checkAll.each(function(){
+                    //得到这一组的group名称
+                    var groupName = $(this).attr("data-checkbox-group");
+                    //功能主逻辑
+                    startCheck(groupName);
+                });
+                
+                //全选核心功能
+                function startCheck(groupName){
+                    //该组的所有checkbox
+                    var selectors = ["[data-checkbox-group='", groupName ,"']"].join("");
+                    var checkbox = $(selectors);
+                    //全选checkbox
+                    var allCheckbox = checkbox.filter("[data-checkbox-checkall]");
+                    //其余checkbox
+                    var otherCheckbox = checkbox.not(allCheckbox);
+
+                    //判断是否全部选中
+                    var isCheckAll = function(){
+                        //计数器
+                        var n = 0;
+                        otherCheckbox.each(function(){
+                            //遍历checkbox，如果选中，就让n加1
+                            $(this).is(":checked") && n++;
+                        });
+                        //如果n等于其余checkbox的长度，即代表全部选中
+                        allCheckbox.get(0).checked = ( n == otherCheckbox.length);
+                    };
+                    
+                    //点击全选按钮时操作
+                    allCheckbox.on("click",function(){
+                        //把每一个checkbox的状态变为和全选checkbox一样
+                        var status = $(this).is(":checked");
+                        otherCheckbox.each(function(){
+                            $(this).prop("checked",status);
+                        });
+                    });
+                    
+                    //点击其余按钮判断是否全选
+                    otherCheckbox.on("click",function(){
+                        isCheckAll();
+                    });
+                }
+            })(jQuery);
+        </script>
+    </body>
+
+</html>
